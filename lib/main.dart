@@ -5,6 +5,10 @@ import 'theme/app_colors.dart';
 import 'theme/app_text_styles.dart';
 import 'screens/auth/widget/input_field.dart';
 import 'screens/auth/widget/google_button.dart';
+import 'screens/auth/signed_in_screen.dart';
+
+// Global navigator key to allow navigation/snackbars safely from async callbacks
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Demo App',
+      navigatorKey: navigatorKey,
       theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: AppColors.bg),
       home: const SplashLoader(),
     );
@@ -178,7 +183,6 @@ class _AuthScreenState extends State<AuthScreen> {
                     return ElevatedButton(
                       onPressed: canSubmit
                           ? () async {
-                              final messenger = ScaffoldMessenger.of(context);
                               setState(() => isLoading = true);
                               try {
                                 if (isSignIn) {
@@ -188,8 +192,19 @@ class _AuthScreenState extends State<AuthScreen> {
                                         email: email.text.trim(),
                                         password: password.text,
                                       );
-                                  messenger.showSnackBar(
-                                    const SnackBar(content: Text('Signed in')),
+                                  if (navigatorKey.currentContext != null) {
+                                    ScaffoldMessenger.of(
+                                      navigatorKey.currentContext!,
+                                    ).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Signed in'),
+                                      ),
+                                    );
+                                  }
+                                  navigatorKey.currentState?.pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (_) => const SignedInScreen(),
+                                    ),
                                   );
                                   return;
                                 }
@@ -200,7 +215,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 final pw2 = confirmPassword.text;
 
                                 if (name.isEmpty) {
-                                  messenger.showSnackBar(
+                                  ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text('Please enter your name'),
                                     ),
@@ -208,7 +223,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                   return;
                                 }
                                 if (pw.isEmpty || pw2.isEmpty) {
-                                  messenger.showSnackBar(
+                                  ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text(
                                         'Please enter and confirm your password',
@@ -218,7 +233,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                   return;
                                 }
                                 if (pw != pw2) {
-                                  messenger.showSnackBar(
+                                  ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text('Passwords do not match'),
                                     ),
@@ -233,23 +248,40 @@ class _AuthScreenState extends State<AuthScreen> {
                                     );
                                 // update display name if available
                                 await cred.user?.updateDisplayName(name);
-                                messenger.showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Account created'),
+                                if (navigatorKey.currentContext != null) {
+                                  ScaffoldMessenger.of(
+                                    navigatorKey.currentContext!,
+                                  ).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Account created'),
+                                    ),
+                                  );
+                                }
+                                navigatorKey.currentState?.pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (_) => const SignedInScreen(),
                                   ),
                                 );
                               } on FirebaseAuthException catch (e) {
-                                messenger.showSnackBar(
-                                  SnackBar(
-                                    content: Text(e.message ?? 'Auth error'),
-                                  ),
-                                );
+                                if (navigatorKey.currentContext != null) {
+                                  ScaffoldMessenger.of(
+                                    navigatorKey.currentContext!,
+                                  ).showSnackBar(
+                                    SnackBar(
+                                      content: Text(e.message ?? 'Auth error'),
+                                    ),
+                                  );
+                                }
                               } catch (e) {
-                                messenger.showSnackBar(
-                                  SnackBar(
-                                    content: Text('Unexpected error: $e'),
-                                  ),
-                                );
+                                if (navigatorKey.currentContext != null) {
+                                  ScaffoldMessenger.of(
+                                    navigatorKey.currentContext!,
+                                  ).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Unexpected error: $e'),
+                                    ),
+                                  );
+                                }
                               } finally {
                                 if (mounted) setState(() => isLoading = false);
                               }
