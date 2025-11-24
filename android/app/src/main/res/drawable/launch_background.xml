@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launch splash: background color + centered image.
+     Place your splash PNG at android/app/src/main/res/drawable/splash_image.png
+     (or in the appropriate density-specific drawable-/mipmap- folders).
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Primary background color that matches AppColors.primary (#E53935) -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#E53935" />
+        </shape>
+    </item>
+
+    <!-- No image here — the Flutter layer will show the animated GIF after engine start. -->
+</layer-list>
