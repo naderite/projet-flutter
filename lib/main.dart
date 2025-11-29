@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'services/auth_service.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_text_styles.dart';
 import 'screens/auth/widget/input_field.dart';
@@ -42,6 +44,7 @@ class SplashLoader extends StatefulWidget {
 
 class _SplashLoaderState extends State<SplashLoader> {
   bool _ready = false;
+  String? _initError;
 
   @override
   void initState() {
@@ -54,10 +57,20 @@ class _SplashLoaderState extends State<SplashLoader> {
     // Increase delay so the GIF is visible longer and we avoid a quick flash.
     final minDelay = Future.delayed(const Duration(milliseconds: 1500));
     try {
-      await Firebase.initializeApp();
-    } catch (_) {
-      // If initialize fails, we still proceed to show the app and surface errors
-      // via the AuthScreen's UI. Don't block forever.
+      // Initialize Firebase with platform-specific options provided by
+      // `lib/firebase_options.dart`. Replace placeholders in that file or
+      // generate it with the FlutterFire CLI for an automatic configuration.
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      _initError = null;
+    } catch (e, st) {
+      // Capture initialization errors so we don't proceed to the auth UI
+      // which would produce "No Firebase App '[DEFAULT]' has been created".
+      _initError = e.toString();
+      // You may want to log the stack in dev builds
+      // ignore: avoid_print
+      print('Firebase.initializeApp() failed: $e\n$st');
     }
     await minDelay;
     if (!mounted) return;
@@ -66,7 +79,68 @@ class _SplashLoaderState extends State<SplashLoader> {
 
   @override
   Widget build(BuildContext context) {
-    if (_ready) return const AuthScreen();
+    if (_ready) {
+      if (_initError != null) {
+        // Show a simple error screen with retry so the developer can fix
+        // configuration (e.g. missing Firebase web options) and retry.
+        return Scaffold(
+          backgroundColor: AppColors.bg,
+          body: SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.redAccent,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Firebase initialization failed',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _initError ?? 'Unknown error',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () async {
+                        setState(() {
+                          _ready = false;
+                          _initError = null;
+                        });
+                        await _init();
+                      },
+                      child: const Text('Retry Initialize Firebase'),
+                    ),
+                    const SizedBox(height: 8),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'On web make sure you configured Firebase with FirebaseOptions (see README).',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white54, fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
+      return const AuthScreen();
+    }
 
     return Scaffold(
       backgroundColor: AppColors.primary,
@@ -241,13 +315,12 @@ class _AuthScreenState extends State<AuthScreen> {
                                   return;
                                 }
 
-                                final cred = await FirebaseAuth.instance
-                                    .createUserWithEmailAndPassword(
-                                      email: email.text.trim(),
-                                      password: pw,
-                                    );
-                                // update display name if available
-                                await cred.user?.updateDisplayName(name);
+                                // Register and create user document (AuthService handles Firestore)
+                                await AuthService().registerWithEmail(
+                                  email: email.text.trim(),
+                                  password: pw,
+                                  displayName: name,
+                                );
                                 if (navigatorKey.currentContext != null) {
                                   ScaffoldMessenger.of(
                                     navigatorKey.currentContext!,

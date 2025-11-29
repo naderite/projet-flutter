@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import '../../../services/auth_service.dart';
 import '../signed_in_screen.dart';
 
 class GoogleButton extends StatefulWidget {
@@ -18,21 +18,9 @@ class _GoogleButtonState extends State<GoogleButton> {
     final messenger = ScaffoldMessenger.of(context);
     setState(() => _loading = true);
     try {
-      // Trigger the Google Sign-In flow
-      final googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        // user cancelled
-        return;
-      }
+      // Use AuthService to handle Google sign-in and Firestore user creation
+      await AuthService().signInWithGoogle();
 
-      final googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      // Sign in to Firebase with the Google [UserCredential]
-      await FirebaseAuth.instance.signInWithCredential(credential);
       messenger.showSnackBar(
         const SnackBar(content: Text('Signed in with Google')),
       );
