@@ -28,12 +28,13 @@ class DefaultFirebaseOptions {
 
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
+        // Values extracted from android/app/google-services.json
         return FirebaseOptions(
-          apiKey: "AIzaSyBg0o13J6ie3a3fOUUeT3jFcCm1bxcBSeo",
+          apiKey: "AIzaSyBtpZEcuWfMBULqc7fkuwlrWfPa6KkRhDk",
+          appId: "1:4521177600:android:b84ecf9d3ba1b97fcd1ee5",
+          messagingSenderId: "4521177600",
           projectId: "movie-709e9",
           storageBucket: "movie-709e9.firebasestorage.app",
-          messagingSenderId: "4521177600",
-          appId: "1:4521177600:web:81347a545ab2e994cd1ee5",
         );
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:

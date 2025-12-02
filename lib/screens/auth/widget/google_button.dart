@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../services/auth_service.dart';
-import '../signed_in_screen.dart';
+import '../../../config/routes.dart';
+import '../collect_age_dialog.dart';
 
 class GoogleButton extends StatefulWidget {
   final bool isSignIn;
@@ -21,15 +22,40 @@ class _GoogleButtonState extends State<GoogleButton> {
       // Use AuthService to handle Google sign-in and Firestore user creation
       await AuthService().signInWithGoogle();
 
+      // If the user document doesn't have an age, prompt for it and save.
+      if (!mounted) return;
+      final currentAge = await AuthService().getCurrentUserAge();
+      if (currentAge == null) {
+        if (!mounted) return;
+        final provided = await showDialog<int?>(
+          context: context,
+          builder: (_) => const CollectAgeDialog(),
+        );
+
+        if (provided == null) {
+          messenger.showSnackBar(
+            const SnackBar(content: Text('Age is required to continue')),
+          );
+          return;
+        }
+
+        try {
+          await AuthService().setUserAge(provided);
+        } catch (e) {
+          messenger.showSnackBar(
+            SnackBar(content: Text('Failed to save age: $e')),
+          );
+          return;
+        }
+      }
+
       messenger.showSnackBar(
         const SnackBar(content: Text('Signed in with Google')),
       );
 
-      // Navigate to the signed-in screen replacing the current route
+      // Navigate to the role-based router which will redirect to admin/user home
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const SignedInScreen()),
-        );
+        Navigator.of(context).pushReplacementNamed(AppRoutes.roleGate);
       }
     } on FirebaseAuthException catch (e) {
       messenger.showSnackBar(

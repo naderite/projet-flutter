@@ -15,6 +15,7 @@ class AuthService {
     required String email,
     required String password,
     required String displayName,
+    required int age,
   }) async {
     final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: email,
@@ -26,7 +27,11 @@ class AuthService {
 
     // Ensure a user document exists in Firestore
     if (cred.user != null) {
-      await _createOrUpdateUserDoc(cred.user!, displayName: displayName);
+      await _createOrUpdateUserDoc(
+        cred.user!,
+        displayName: displayName,
+        age: age,
+      );
     }
 
     return cred;
@@ -65,16 +70,24 @@ class AuthService {
     return userCred;
   }
 
-  Future<void> _createOrUpdateUserDoc(User user, {String? displayName}) async {
+  Future<void> _createOrUpdateUserDoc(
+    User user, {
+    String? displayName,
+    int? age,
+  }) async {
     final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
 
     final snapshot = await docRef.get();
-    final data = {
+    final data = <String, dynamic>{
       'uid': user.uid,
       'email': user.email,
       'displayName': user.displayName ?? displayName,
       'photoURL': user.photoURL,
     };
+
+    if (age != null) {
+      data['age'] = age;
+    }
 
     if (!snapshot.exists) {
       // New document: set with createdAt and default role
@@ -132,5 +145,32 @@ class AuthService {
       // ignore errors from GoogleSignIn signOut if not applicable
     }
     await FirebaseAuth.instance.signOut();
+  }
+
+  /// Returns the `age` field from the current user's Firestore document,
+  /// or null if missing.
+  Future<int?> getCurrentUserAge() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return null;
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+    if (!doc.exists) return null;
+    final data = doc.data();
+    if (data == null) return null;
+    final a = data['age'];
+    if (a == null) return null;
+    if (a is int) return a;
+    if (a is num) return a.toInt();
+    return null;
+  }
+
+  /// Sets or updates the age field for the currently signed-in user.
+  Future<void> setUserAge(int age) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw StateError('No signed-in user');
+    final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    await docRef.set({'age': age}, SetOptions(merge: true));
   }
 }
