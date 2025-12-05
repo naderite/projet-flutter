@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test/screens/home/details.dart';
 import 'package:test/screens/home/user_home.dart';
 import '../../services/user_service.dart';
 import '../../services/movie_service.dart';
@@ -118,7 +119,8 @@ class _HomeState extends State<Home> {
                   return ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: movies.length,
-                    itemBuilder: (context, index) => _movieCard(movies[index]),
+                    itemBuilder: (context, index) =>
+                        _movieCard(context, movies[index]),
                   );
                 },
               ),
@@ -130,7 +132,7 @@ class _HomeState extends State<Home> {
   }
 }
 
-Widget _movieCard(Movie movie) {
+Widget _movieCard(BuildContext context, Movie movie) {
   return Container(
     width: 150,
     margin: const EdgeInsets.only(right: 16),
@@ -140,7 +142,20 @@ Widget _movieCard(Movie movie) {
         Stack(
           children: [
             InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Details(
+                      movieyear: movie.year,
+                      title: movie.title,
+                      movieimg: movie.imageUrl,
+                      moviecategory: movie.category,
+                      id: movie.id,
+                    ),
+                  ),
+                );
+              },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.network(

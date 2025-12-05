@@ -6,8 +6,9 @@ class MovieService {
 
   Stream<List<Movie>> getMovies() {
     return _movies.snapshots().map(
-      (snapshot) =>
-          snapshot.docs.map((doc) => Movie.fromMap(doc.data())).toList(),
+      (snapshot) => snapshot.docs
+          .map((doc) => Movie.fromMap(doc.data(), doc.id))
+          .toList(),
     );
   }
 }

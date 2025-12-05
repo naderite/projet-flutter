@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test/screens/home/details.dart';
 import '../../services/movie_service.dart';
 import '../../models/movie.dart';
 
@@ -43,13 +44,29 @@ class _SearchState extends State<Search> {
                     margin: const EdgeInsets.only(bottom: 20),
                     child: Column(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.network(
-                            movie.imageUrl,
-                            height: 200,
-                            width: 150,
-                            fit: BoxFit.cover,
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Details(
+                                  movieyear: movie.year,
+                                  title: movie.title,
+                                  movieimg: movie.imageUrl,
+                                  moviecategory: movie.category,
+                                  id: movie.id,
+                                ),
+                              ),
+                            );
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.network(
+                              movie.imageUrl,
+                              height: 200,
+                              width: 150,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 6),
