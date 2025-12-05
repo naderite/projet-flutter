@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test/screens/home/details.dart';
 import 'package:test/screens/home/user_home.dart';
+import 'package:test/services/favorite_movie.dart';
 import '../../services/user_service.dart';
 import '../../services/movie_service.dart';
 import '../../models/movie.dart';
@@ -85,7 +86,6 @@ class _HomeState extends State<Home> {
                 ),
                 TextButton(
                   onPressed: () {
-                    // Find the parent MoviesApp state and change index to 1 (Search)
                     final moviesAppState = context
                         .findAncestorStateOfType<UserHomeState>();
                     if (moviesAppState != null) {
@@ -115,6 +115,67 @@ class _HomeState extends State<Home> {
                   }
 
                   final movies = snapshot.data!;
+
+                  return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: movies.length,
+                    itemBuilder: (context, index) =>
+                        _movieCard(context, movies[index]),
+                  );
+                },
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "your watch list",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    final moviesAppState = context
+                        .findAncestorStateOfType<UserHomeState>();
+                    if (moviesAppState != null) {
+                      moviesAppState.setState(() {
+                        moviesAppState.index = 2;
+                      });
+                    }
+                  },
+
+                  child: const Text(
+                    "See All",
+                    style: TextStyle(color: Color(0xFFEB2F3D)),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            SizedBox(
+              height: 260,
+              child: StreamBuilder<List<Movie>>(
+                stream: FavoriteMovie().getFavoriteMovies(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final movies = snapshot.data!;
+
+                  if (movies.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "No favorites yet",
+                        style: TextStyle(color: Colors.white70),
+                      ),
+                    );
+                  }
 
                   return ListView.builder(
                     scrollDirection: Axis.horizontal,
