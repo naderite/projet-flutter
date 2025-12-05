@@ -119,11 +119,13 @@ Widget _movieCard(BuildContext context, Movie movie) {
         ),
 
         const SizedBox(height: 6),
-        Text(
-          movie.title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+        Center(
+          child: Text(
+            movie.title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         Text(movie.category, style: const TextStyle(color: Colors.white70)),
