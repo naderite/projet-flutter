@@ -110,6 +110,7 @@ class _HomeState extends State<Home> {
 
                 SizedBox(
                   height: 260,
+                  /*StreamBuilder is a Flutter widget that listens to a stream and rebuilds itself whenever the stream emits a new value.*/
                   child: StreamBuilder<List<Movie>>(
                     stream: MovieService().getMovies(),
                     builder: (context, snapshot) {
@@ -208,14 +209,6 @@ class _HomeState extends State<Home> {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {},
-
-                      child: const Text(
-                        "See All",
-                        style: TextStyle(color: Color(0xFFEB2F3D)),
-                      ),
-                    ),
                   ],
                 ),
 
@@ -248,8 +241,6 @@ class _HomeState extends State<Home> {
                       allUsers.forEach((userId, favs) {
                         if (userId.toString().trim() ==
                             currentUserId.toString().trim()) {
-                          print("Comparing: $userId with $currentUserId");
-
                           return;
                         }
 
@@ -295,7 +286,7 @@ class _HomeState extends State<Home> {
 
 Widget _matchingUserCard(String userId) {
   return FutureBuilder(
-    future: UserService().getUserDataById(userId), 
+    future: UserService().getUserDataById(userId),
     builder: (context, snapshot) {
       if (!snapshot.hasData) return const SizedBox();
 
@@ -350,6 +341,7 @@ Widget _movieCard(BuildContext context, Movie movie) {
                   ),
                 );
               },
+              /*clip its child with rounded corners*/
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.network(
@@ -371,7 +363,6 @@ Widget _movieCard(BuildContext context, Movie movie) {
             fontWeight: FontWeight.bold,
           ),
         ),
-        Text(movie.category, style: const TextStyle(color: Colors.white70)),
       ],
     ),
   );
