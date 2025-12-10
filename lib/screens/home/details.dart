@@ -57,7 +57,6 @@ class _DetailsState extends State<Details> {
             "category": widget.moviecategory,
             "addedAt": FieldValue.serverTimestamp(),
           });
-      print("Added to favorites!");
     } catch (e) {
       print("Error adding favorite: $e");
     }
@@ -139,23 +138,20 @@ class _DetailsState extends State<Details> {
             ),
             const SizedBox(height: 20),
 
-            Text(
-              widget.title,
-              style: const TextStyle(
-                fontSize: 25,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  "Release year: ${widget.movieyear}",
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                  widget.title,
+                  style: const TextStyle(
+                    fontSize: 25,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+
                 Text(
-                  "Genre: ${widget.moviecategory}",
+                  "Release year: ${widget.movieyear}",
                   style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
