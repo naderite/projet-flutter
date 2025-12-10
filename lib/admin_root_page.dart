@@ -71,7 +71,7 @@ class _AdminRootPageState extends State<AdminRootPage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bookmark_border),
-            label: 'Watch list',
+            label: 'movie list',
           ),
         ],
       ),
