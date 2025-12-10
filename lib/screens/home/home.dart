@@ -295,7 +295,7 @@ class _HomeState extends State<Home> {
 
 Widget _matchingUserCard(String userId) {
   return FutureBuilder(
-    future: UserService().getUserDataById(userId), // <-- fetch user by ID
+    future: UserService().getUserDataById(userId), 
     builder: (context, snapshot) {
       if (!snapshot.hasData) return const SizedBox();
 
