@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/auth/auth_screen.dart';
 import '../screens/role/role_gate.dart';
-import '../screens/home/admin_home.dart';
+import '../screens/admin/admin_root_page.dart';
 import '../screens/home/user_home.dart';
 
 /// Centralized route names for the application.
@@ -25,7 +25,7 @@ abstract class AppRoutes {
       case roleGate:
         return MaterialPageRoute(builder: (_) => const RoleGate());
       case adminHome:
-        return MaterialPageRoute(builder: (_) => const AdminHome());
+        return MaterialPageRoute(builder: (_) => const AdminRootPage());
       case userHome:
         return MaterialPageRoute(builder: (_) => const UserHome());
       case signedIn:
