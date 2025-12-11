@@ -216,6 +216,7 @@ class _HomeState extends State<Home> {
 
                 SizedBox(
                   height: 120,
+                  //stream: gives data over time
                   child: StreamBuilder<Map<String, List<String>>>(
                     stream: FavoriteMovie().getAllUsersFavorites(),
                     builder: (context, snapshot) {
@@ -291,7 +292,7 @@ Widget _matchingUserCard(String userId) {
       if (!snapshot.hasData) return const SizedBox();
 
       final user = snapshot.data!;
-
+      //snapshot : object that represents the current state of an asynchronous data source.
       return Container(
         width: 120,
         margin: const EdgeInsets.only(right: 12),

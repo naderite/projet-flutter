@@ -54,13 +54,10 @@ class _SearchState extends State<Search> {
 
                 return LayoutBuilder(
                   builder: (context, constraints) {
-                    // width of the screen
                     double width = constraints.maxWidth;
 
-                    // movie card width
                     double cardWidth = 120;
 
-                    // compute how many cards fit per row
                     int crossAxisCount = (width / cardWidth).floor();
 
                     return GridView.builder(
