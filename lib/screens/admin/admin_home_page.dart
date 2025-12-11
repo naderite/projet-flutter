@@ -85,7 +85,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
             Text(
-              'Hello, Smith',
+              'Hello',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -95,10 +95,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
             SizedBox(height: 2),
             Text(
               'Admin dashboard',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: Colors.grey, fontSize: 12),
             ),
           ],
         ),
@@ -118,10 +115,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
         children: const [
           Icon(Icons.search, color: Colors.grey, size: 20),
           SizedBox(width: 8),
-          Text(
-            'Search',
-            style: TextStyle(color: Colors.grey, fontSize: 14),
-          ),
+          Text('Search', style: TextStyle(color: Colors.grey, fontSize: 14)),
           Spacer(),
           Icon(Icons.tune, color: Colors.grey, size: 20),
         ],
@@ -160,10 +154,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
           ],
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 190,
-          child: _buildMoviesContent(),
-        ),
+        SizedBox(height: 190, child: _buildMoviesContent()),
       ],
     );
   }
@@ -174,22 +165,18 @@ class _AdminHomePageState extends State<AdminHomePage> {
     }
     if (_movieError != null) {
       return Center(
-        child: Text(
-          _movieError!,
-          style: const TextStyle(color: Colors.white),
-        ),
+        child: Text(_movieError!, style: const TextStyle(color: Colors.white)),
       );
     }
     if (_movies.isEmpty) {
       return const Center(
-        child: Text(
-          'No movies found',
-          style: TextStyle(color: Colors.white),
-        ),
+        child: Text('No movies found', style: TextStyle(color: Colors.white)),
       );
     }
 
-    final displayMovies = _movies.length > 10 ? _movies.sublist(0, 10) : _movies;
+    final displayMovies = _movies.length > 10
+        ? _movies.sublist(0, 10)
+        : _movies;
 
     return ListView.separated(
       scrollDirection: Axis.horizontal,
@@ -223,9 +210,9 @@ class _AdminHomePageState extends State<AdminHomePage> {
               color: Colors.grey[800],
               image: movie.posterUrl.isNotEmpty
                   ? DecorationImage(
-                image: NetworkImage(movie.posterUrl),
-                fit: BoxFit.cover,
-              )
+                      image: NetworkImage(movie.posterUrl),
+                      fit: BoxFit.cover,
+                    )
                   : null,
             ),
           ),
@@ -248,10 +235,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Text(
               'Action',
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 11,
-              ),
+              style: const TextStyle(color: Colors.grey, fontSize: 11),
             ),
           ),
         ],
@@ -307,9 +291,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 );
               }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const Center(child: CircularProgressIndicator());
               }
 
               final docs = snapshot.data!.docs;
@@ -327,10 +309,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 itemCount: docs.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 16),
                 itemBuilder: (context, index) {
-                  final data =
-                  docs[index].data() as Map<String, dynamic>;
-                  final displayName =
-                  (data['displayName'] ?? 'User') as String;
+                  final data = docs[index].data() as Map<String, dynamic>;
+                  final displayName = (data['displayName'] ?? 'User') as String;
                   final photoUrl = (data['photoURL'] ?? '') as String;
 
                   final initials = _initialsFromName(displayName);
@@ -340,17 +320,18 @@ class _AdminHomePageState extends State<AdminHomePage> {
                       CircleAvatar(
                         radius: 26,
                         backgroundColor: Colors.grey[700],
-                        backgroundImage:
-                        photoUrl.isNotEmpty ? NetworkImage(photoUrl) : null,
+                        backgroundImage: photoUrl.isNotEmpty
+                            ? NetworkImage(photoUrl)
+                            : null,
                         child: photoUrl.isEmpty
                             ? Text(
-                          initials,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )
+                                initials,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )
                             : null,
                       ),
                       const SizedBox(height: 6),

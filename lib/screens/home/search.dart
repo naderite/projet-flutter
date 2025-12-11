@@ -52,54 +52,78 @@ class _SearchState extends State<Search> {
 
                 final movies = snapshot.data!;
 
-                return ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: movies.length,
-                  itemBuilder: (context, index) {
-                    final movie = movies[index];
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 20),
-                      child: Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Details(
-                                    movieyear: movie.year,
-                                    title: movie.title,
-                                    movieimg: movie.imageUrl,
-                                    moviecategory: movie.category,
-                                    id: movie.id,
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    // width of the screen
+                    double width = constraints.maxWidth;
+
+                    // movie card width
+                    double cardWidth = 120;
+
+                    // compute how many cards fit per row
+                    int crossAxisCount = (width / cardWidth).floor();
+
+                    return GridView.builder(
+                      padding: const EdgeInsets.all(8),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 8,
+                        childAspectRatio:
+                            0.55, // reduce image+text height -> less empty space
+                      ),
+                      itemCount: movies.length,
+                      itemBuilder: (context, index) {
+                        final movie = movies[index];
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Details(
+                                      movieyear: movie.year,
+                                      title: movie.title,
+                                      movieimg: movie.imageUrl,
+                                      moviecategory: movie.category,
+                                      id: movie.id,
+                                    ),
                                   ),
+                                );
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  movie.imageUrl,
+                                  height: 150,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
                                 ),
-                              );
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: Image.network(
-                                movie.imageUrl,
-                                height: 200,
-                                width: 150,
-                                fit: BoxFit.cover,
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            movie.title,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                            const SizedBox(height: 4),
+                            Text(
+                              movie.title,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          Text(
-                            movie.year.toString(),
-                            style: const TextStyle(color: Colors.white70),
-                          ),
-                        ],
-                      ),
+                            Text(
+                              movie.year.toString(),
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     );
                   },
                 );
